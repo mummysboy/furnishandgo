@@ -47,7 +47,7 @@ export default function FurnitureCard({ item, onClick }: FurnitureCardProps) {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
         />
         {item.inStock && (
-          <span className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold transition-all duration-300 group-hover:scale-110 shadow-md">
+          <span className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-300 group-hover:scale-110 shadow-md">
             In Stock
           </span>
         )}
@@ -64,10 +64,22 @@ export default function FurnitureCard({ item, onClick }: FurnitureCardProps) {
         <p className="text-gray-600 text-sm mb-4 line-clamp-3 transition-colors duration-300 flex-grow">
           <span dangerouslySetInnerHTML={{ __html: item.description }} />
         </p>
+        {(item.quantity ?? 0) > 0 && (
+          <div className="flex items-center gap-2 mb-4">
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            <span className="text-sm text-gray-600 font-medium">
+              {item.quantity} available in stock
+            </span>
+          </div>
+        )}
         <div className="flex items-center justify-between mt-auto">
-          <span className="text-2xl font-bold text-gray-900 transition-all duration-300">
-            {formatPrice(item.price)}
-          </span>
+          <div>
+            <span className="text-2xl font-bold text-gray-900 transition-all duration-300">
+              {formatPrice(item.price)}
+            </span>
+          </div>
           <button
             onClick={(e) => {
               e.stopPropagation()

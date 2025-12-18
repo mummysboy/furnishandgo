@@ -7,6 +7,7 @@ export interface FurnitureItem {
   image: string
   images?: string[] // Multiple images for carousel
   inStock: boolean
+  quantity: number
 }
 
 export const furnitureItems: FurnitureItem[] = [
@@ -23,6 +24,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 2,
@@ -37,6 +39,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 3,
@@ -51,6 +54,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 4,
@@ -65,6 +69,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 5,
@@ -79,6 +84,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 6,
@@ -93,6 +99,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 7,
@@ -107,6 +114,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 8,
@@ -121,6 +129,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   // More Dining items
   {
@@ -136,6 +145,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 10,
@@ -150,6 +160,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 11,
@@ -164,6 +175,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 12,
@@ -178,6 +190,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   // More Seating items
   {
@@ -193,6 +206,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 14,
@@ -207,6 +221,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 15,
@@ -221,6 +236,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 16,
@@ -235,6 +251,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   // More Bedroom items
   {
@@ -250,6 +267,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 18,
@@ -264,6 +282,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 19,
@@ -278,6 +297,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 20,
@@ -292,6 +312,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   // More Tables
   {
@@ -307,6 +328,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 22,
@@ -321,6 +343,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 23,
@@ -335,6 +358,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   // More Storage
   {
@@ -350,6 +374,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 25,
@@ -364,6 +389,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 26,
@@ -378,6 +404,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   // Kitchen Appliances
   {
@@ -393,6 +420,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 28,
@@ -407,6 +435,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 29,
@@ -421,6 +450,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 30,
@@ -435,6 +465,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 31,
@@ -449,6 +480,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   // Furniture Packages
   {
@@ -464,6 +496,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 33,
@@ -478,6 +511,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 34,
@@ -492,6 +526,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
   {
     id: 35,
@@ -506,6 +541,7 @@ export const furnitureItems: FurnitureItem[] = [
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     inStock: true,
+    quantity: 1,
   },
 ]
 

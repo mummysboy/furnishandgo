@@ -52,7 +52,10 @@ export default function AdminPage() {
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8">
             <button
-              onClick={() => setActiveTab('furniture')}
+              onClick={() => {
+                setActiveTab('furniture')
+                setRefreshKey(prev => prev + 1)
+              }}
               className={`${
                 activeTab === 'furniture'
                   ? 'border-blue-500 text-blue-600'
@@ -62,7 +65,10 @@ export default function AdminPage() {
               Furniture Listings
             </button>
             <button
-              onClick={() => setActiveTab('categories')}
+              onClick={() => {
+                setActiveTab('categories')
+                setRefreshKey(prev => prev + 1)
+              }}
               className={`${
                 activeTab === 'categories'
                   ? 'border-blue-500 text-blue-600'

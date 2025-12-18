@@ -25,18 +25,15 @@ export default function Header() {
           </Link>
           <div className="flex items-center space-x-6">
             <nav className="hidden md:flex space-x-8">
-              <a href="#services" className="text-gray-700 hover:text-gray-900 transition-colors">
-                Services
-              </a>
-              <a href="#furniture" className="text-gray-700 hover:text-gray-900 transition-colors">
+              <Link href="/furniture" className="text-gray-700 hover:text-gray-900 transition-colors">
                 Furniture
-              </a>
-              <a href="#about" className="text-gray-700 hover:text-gray-900 transition-colors">
+              </Link>
+              <Link href="/about" className="text-gray-700 hover:text-gray-900 transition-colors">
                 About
-              </a>
-              <a href="#contact" className="text-gray-700 hover:text-gray-900 transition-colors">
+              </Link>
+              <Link href="/contact" className="text-gray-700 hover:text-gray-900 transition-colors">
                 Contact
-              </a>
+              </Link>
             </nav>
             <Link
               href="/cart"

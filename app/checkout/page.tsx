@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useState } from 'react'
+import { decrementStockQuantities } from '@/lib/adminData'
 
 export default function CheckoutPage() {
   const { cart, getTotalPrice, clearCart } = useCart()
@@ -42,6 +43,13 @@ export default function CheckoutPage() {
 
     // Simulate order processing
     await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    // Decrement stock quantities for items sold
+    const cartItemsForStockUpdate = cart.map(item => ({
+      id: item.id,
+      quantity: item.quantity // This is the cart quantity (how many were sold)
+    }))
+    decrementStockQuantities(cartItemsForStockUpdate)
 
     // Clear cart and show success
     clearCart()

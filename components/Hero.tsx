@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-gray-50 py-20 lg:py-32">
@@ -19,12 +21,12 @@ export default function Hero() {
             <span className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-medium">Free Installation</span>
             <span className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-medium">Free Assembly</span>
           </div>
-          <a
-            href="#furniture"
+          <Link
+            href="/furniture"
             className="inline-block bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 active:bg-blue-800 transition-all duration-300 ease-out shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 hover:scale-105"
           >
             Browse Our Collection
-          </a>
+          </Link>
         </div>
       </div>
     </section>

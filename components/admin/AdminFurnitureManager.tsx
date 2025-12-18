@@ -2,22 +2,22 @@
 
 import { useState, useEffect } from 'react'
 import { FurnitureItem } from '@/data/furniture'
-import { getFurnitureItems, saveFurnitureItems, getCategories } from '@/lib/adminData'
+import { getFurnitureItems, saveFurnitureItems, getCategories, addCategory } from '@/lib/adminData'
 import FurnitureForm from './FurnitureForm'
 
 export default function AdminFurnitureManager() {
   const [furniture, setFurniture] = useState<FurnitureItem[]>([])
+  const [categories, setCategories] = useState<string[]>([])
   
   useEffect(() => {
     setFurniture(getFurnitureItems())
+    setCategories(getCategories())
   }, [])
+  
   const [editingItem, setEditingItem] = useState<FurnitureItem | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
-
-  // Get unique categories
-  const categories = getCategories(furniture)
 
   // Filter furniture based on search and category
   const filteredFurniture = furniture.filter(item => {
@@ -46,6 +46,12 @@ export default function AdminFurnitureManager() {
   }
 
   const handleSave = (item: FurnitureItem) => {
+    // Add category if it doesn't exist
+    if (!categories.includes(item.category)) {
+      addCategory(item.category)
+      setCategories(getCategories())
+    }
+    
     let updated: FurnitureItem[]
     if (editingItem) {
       // Update existing item
@@ -128,6 +134,9 @@ export default function AdminFurnitureManager() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Stock
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Quantity
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
@@ -136,7 +145,7 @@ export default function AdminFurnitureManager() {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredFurniture.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                     No furniture items found
                   </td>
                 </tr>
@@ -172,6 +181,9 @@ export default function AdminFurnitureManager() {
                       }`}>
                         {item.inStock ? 'In Stock' : 'Out of Stock'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.quantity ?? 0}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button

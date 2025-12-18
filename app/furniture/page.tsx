@@ -1,0 +1,81 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import { FurnitureItem } from '@/data/furniture'
+import { getFurnitureItems } from '@/lib/adminData'
+import CategoryCarousel from '@/components/CategoryCarousel'
+import FurnitureModal from '@/components/FurnitureModal'
+
+export default function FurniturePage() {
+  const [selectedItem, setSelectedItem] = useState<FurnitureItem | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [furnitureItems, setFurnitureItems] = useState<FurnitureItem[]>([])
+
+  useEffect(() => {
+    setFurnitureItems(getFurnitureItems())
+  }, [])
+
+  // Group furniture by category
+  const furnitureByCategory = furnitureItems.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = []
+    }
+    acc[item.category].push(item)
+    return acc
+  }, {} as Record<string, FurnitureItem[]>)
+
+  const handleCardClick = (item: FurnitureItem) => {
+    setSelectedItem(item)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setTimeout(() => {
+      setSelectedItem(null)
+    }, 300)
+  }
+
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 animate-fade-in">
+      <Header />
+      <section className="py-20 bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16 animate-slide-in">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 transition-colors duration-300">
+              Our Collection
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto transition-colors duration-300">
+              Each piece is chosen with care, because life&apos;s too short for <em>shoddy</em> furniture.
+              <br />
+              <span className="text-sm text-gray-500 italic mt-2 block">
+                (And yes, we deliver. No <em>tsuris</em>.)
+              </span>
+            </p>
+          </div>
+
+          {/* Category Carousels */}
+          {Object.entries(furnitureByCategory).map(([category, items]) => (
+            <CategoryCarousel
+              key={category}
+              category={category}
+              items={items}
+              onItemClick={handleCardClick}
+              showSeeAll={true}
+            />
+          ))}
+        </div>
+      </section>
+
+      <FurnitureModal
+        item={selectedItem}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
+      <Footer />
+    </main>
+  )
+}
+

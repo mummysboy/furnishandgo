@@ -172,12 +172,17 @@ export default function FurnitureModal({ item, isOpen, onClose }: FurnitureModal
           <h2 className="text-3xl font-bold text-gray-900 mb-4">{item.name}</h2>
           
           <div className="mb-6">
-            <span className="text-3xl font-bold text-gray-900">{formatPrice(item.price)}</span>
-            {item.inStock && (
-              <span className="ml-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                In Stock
-              </span>
-            )}
+            <div className="flex items-center gap-4 flex-wrap">
+              <span className="text-3xl font-bold text-gray-900">{formatPrice(item.price)}</span>
+              {item.inStock && (
+                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                  In Stock
+                  {(item.quantity ?? 0) > 0 && (
+                    <span className="ml-2">({item.quantity} available)</span>
+                  )}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="mb-6">
