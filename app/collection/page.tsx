@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { furnitureItems, FurnitureItem } from '@/data/furniture'
+import { FurnitureItem } from '@/data/furniture'
+import { getFurnitureItems } from '@/lib/adminData'
 import CategoryCarousel from '@/components/CategoryCarousel'
 import FurnitureModal from '@/components/FurnitureModal'
 
@@ -12,6 +13,7 @@ export default function CollectionPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedItem, setSelectedItem] = useState<FurnitureItem | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [furnitureItems, setFurnitureItems] = useState<FurnitureItem[]>([])
 
   useEffect(() => {
     // Get category from URL search params
@@ -19,6 +21,7 @@ export default function CollectionPage() {
       const params = new URLSearchParams(window.location.search)
       const category = params.get('category')
       setSelectedCategory(category)
+      setFurnitureItems(getFurnitureItems())
     }
   }, [])
 

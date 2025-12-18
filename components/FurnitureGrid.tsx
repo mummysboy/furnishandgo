@@ -1,13 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { furnitureItems, FurnitureItem } from '@/data/furniture'
+import { useState, useEffect } from 'react'
+import { FurnitureItem } from '@/data/furniture'
+import { getFurnitureItems } from '@/lib/adminData'
 import CategoryCarousel from './CategoryCarousel'
 import FurnitureModal from './FurnitureModal'
 
 export default function FurnitureGrid() {
   const [selectedItem, setSelectedItem] = useState<FurnitureItem | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [furnitureItems, setFurnitureItems] = useState<FurnitureItem[]>([])
+
+  useEffect(() => {
+    setFurnitureItems(getFurnitureItems())
+  }, [])
 
   // Group furniture by category
   const furnitureByCategory = furnitureItems.reduce((acc, item) => {
