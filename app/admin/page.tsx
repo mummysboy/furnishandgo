@@ -3,21 +3,12 @@
 import { useState } from 'react'
 import AdminFurnitureManager from '@/components/admin/AdminFurnitureManager'
 import AdminCategoryManager from '@/components/admin/AdminCategoryManager'
-import { resetFurnitureItems } from '@/lib/adminData'
 
 type AdminTab = 'furniture' | 'categories'
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('furniture')
   const [refreshKey, setRefreshKey] = useState(0)
-
-  const handleReset = () => {
-    if (confirm('Are you sure you want to reset all data to default? This will delete all your changes.')) {
-      resetFurnitureItems()
-      setRefreshKey(prev => prev + 1)
-      alert('Data reset to default. Please refresh the page to see changes.')
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,12 +21,6 @@ export default function AdminPage() {
               <p className="text-gray-600 mt-1">Manage your furniture inventory and categories</p>
             </div>
             <div className="flex items-center gap-4">
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 border border-red-300 text-red-600 hover:bg-red-50 font-medium transition-colors rounded-lg"
-              >
-                Reset to Default
-              </button>
               <a
                 href="/"
                 className="px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"

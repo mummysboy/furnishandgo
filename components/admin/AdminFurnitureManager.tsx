@@ -10,8 +10,19 @@ export default function AdminFurnitureManager() {
   const [categories, setCategories] = useState<string[]>([])
   
   useEffect(() => {
-    setFurniture(getFurnitureItems())
-    setCategories(getCategories())
+    const loadData = async () => {
+      try {
+        const [items, cats] = await Promise.all([
+          getFurnitureItems(),
+          getCategories()
+        ])
+        setFurniture(items)
+        setCategories(cats)
+      } catch (error) {
+        console.error('Error loading data:', error)
+      }
+    }
+    loadData()
   }, [])
   
   const [editingItem, setEditingItem] = useState<FurnitureItem | null>(null)
@@ -37,19 +48,20 @@ export default function AdminFurnitureManager() {
     setIsFormOpen(true)
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm('Are you sure you want to delete this item?')) {
       const updated = furniture.filter(item => item.id !== id)
       setFurniture(updated)
-      saveFurnitureItems(updated)
+      await saveFurnitureItems(updated)
     }
   }
 
-  const handleSave = (item: FurnitureItem) => {
+  const handleSave = async (item: FurnitureItem) => {
     // Add category if it doesn't exist
     if (!categories.includes(item.category)) {
-      addCategory(item.category)
-      setCategories(getCategories())
+      await addCategory(item.category)
+      const updatedCats = await getCategories()
+      setCategories(updatedCats)
     }
     
     let updated: FurnitureItem[]
@@ -62,7 +74,7 @@ export default function AdminFurnitureManager() {
       updated = [...furniture, { ...item, id: newId }]
     }
     setFurniture(updated)
-    saveFurnitureItems(updated)
+    await saveFurnitureItems(updated)
     setIsFormOpen(false)
     setEditingItem(null)
   }

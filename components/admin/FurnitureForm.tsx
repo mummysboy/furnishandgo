@@ -102,8 +102,17 @@ export default function FurnitureForm({ item, categories, onSave, onCancel }: Fu
         if (!value) {
           return "A picture is worth a thousand words. We need one. Words are optional."
         }
+        // If it's a base64 image (starts with data:), it's valid
+        if (value.startsWith('data:image/')) {
+          return ''
+        }
+        // If it's supposed to be a URL, validate it
         if (imageInputMode === 'url' && !isUrl(value)) {
           return "That's not a URL. We checked. Twice."
+        }
+        // If it's a valid URL, it's valid
+        if (isUrl(value)) {
+          return ''
         }
         return ''
       default:
@@ -179,9 +188,13 @@ export default function FurnitureForm({ item, categories, onSave, onCancel }: Fu
       }
       try {
         const base64 = await fileToBase64(file)
-        setFormData({ ...formData, image: base64 })
+        const newFormData = { ...formData, image: base64 }
+        setFormData(newFormData)
         setImageInputMode('upload')
-        setErrors({ ...errors, image: '' })
+        // Clear image error if it exists
+        const newErrors = { ...errors }
+        delete newErrors.image
+        setErrors(newErrors)
       } catch (error) {
         setUploadError('Something went wrong. The file might be cursed. Try a different one.')
         console.error(error)
@@ -307,7 +320,14 @@ export default function FurnitureForm({ item, categories, onSave, onCancel }: Fu
   }
 
   const completionPercentage = getCompletionPercentage()
-  const isFormValid = Object.keys(errors).length === 0 && formData.name && formData.description && formData.price > 0 && formData.image
+  // Check if form is valid - ensure all required fields are filled and no errors exist
+  const isFormValid = 
+    Object.keys(errors).length === 0 && 
+    formData.name.trim().length > 0 && 
+    formData.description.trim().length >= 20 && 
+    formData.price > 0 && 
+    formData.image.trim().length > 0 &&
+    (formData.image.startsWith('data:image/') || isUrl(formData.image))
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && !isSubmitting) {
@@ -602,13 +622,16 @@ export default function FurnitureForm({ item, categories, onSave, onCancel }: Fu
                   type="url"
                   value={formData.image}
                   onChange={(e) => {
-                    handleFieldChange('image', e.target.value)
-                    if (e.target.value && !isUrl(e.target.value)) {
-                      setErrors({ ...errors, image: "That's not a URL. We checked. Twice." })
-                    } else {
+                    const value = e.target.value
+                    handleFieldChange('image', value)
+                    // Clear error if it's a valid URL or base64 image
+                    if (value && (isUrl(value) || value.startsWith('data:image/'))) {
                       const newErrors = { ...errors }
                       delete newErrors.image
                       setErrors(newErrors)
+                    } else if (value && !isUrl(value) && !value.startsWith('data:image/')) {
+                      // Only set error if there's a value and it's not valid
+                      setErrors({ ...errors, image: "That's not a URL. We checked. Twice." })
                     }
                   }}
                   onBlur={() => {

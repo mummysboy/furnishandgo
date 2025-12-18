@@ -77,9 +77,19 @@ export default function AdminCategoryManager() {
   const [categories, setCategories] = useState<string[]>([])
   
   useEffect(() => {
-    const items = getFurnitureItems()
-    setFurniture(items)
-    setCategories(getCategories())
+    const loadData = async () => {
+      try {
+        const [items, cats] = await Promise.all([
+          getFurnitureItems(),
+          getCategories()
+        ])
+        setFurniture(items)
+        setCategories(cats)
+      } catch (error) {
+        console.error('Error loading data:', error)
+      }
+    }
+    loadData()
   }, [])
 
   const [newCategory, setNewCategory] = useState('')
@@ -101,7 +111,7 @@ export default function AdminCategoryManager() {
     return acc
   }, {} as Record<string, number>)
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     const trimmed = newCategory.trim()
     if (!trimmed) {
       alert('Please enter a category name')
@@ -113,12 +123,13 @@ export default function AdminCategoryManager() {
       return
     }
     
-    addCategory(trimmed)
-    setCategories(getCategories())
+    await addCategory(trimmed)
+    const updatedCats = await getCategories()
+    setCategories(updatedCats)
     setNewCategory('')
   }
 
-  const handleRenameCategory = (oldCategory: string, newCategoryName: string) => {
+  const handleRenameCategory = async (oldCategory: string, newCategoryName: string) => {
     if (!newCategoryName.trim() || newCategoryName.trim() === oldCategory) {
       setEditingCategory(null)
       return
@@ -135,9 +146,13 @@ export default function AdminCategoryManager() {
       : `Rename "${oldCategory}" to "${newCategoryName.trim()}"?`
 
     if (confirm(confirmMessage)) {
-      renameCategory(oldCategory, newCategoryName.trim())
-      setFurniture(getFurnitureItems())
-      setCategories(getCategories())
+      await renameCategory(oldCategory, newCategoryName.trim())
+      const [items, cats] = await Promise.all([
+        getFurnitureItems(),
+        getCategories()
+      ])
+      setFurniture(items)
+      setCategories(cats)
       setEditingCategory(null)
     }
   }
@@ -147,10 +162,10 @@ export default function AdminCategoryManager() {
     setDeleteModal({ isOpen: true, category, itemCount })
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     const { category, itemCount } = deleteModal
     
-    const result = removeCategory(category, itemCount > 0)
+    const result = await removeCategory(category, itemCount > 0)
     if (result.success) {
       // Show funny success message
       let successMessages: string[]
@@ -175,8 +190,13 @@ export default function AdminCategoryManager() {
       setSuccessMessage(randomSuccess)
       setShowSuccess(true)
       setDeleteModal({ isOpen: false, category: '', itemCount: 0 })
-      setFurniture(getFurnitureItems())
-      setCategories(getCategories())
+      
+      const [items, cats] = await Promise.all([
+        getFurnitureItems(),
+        getCategories()
+      ])
+      setFurniture(items)
+      setCategories(cats)
       
       // Auto-hide success message after 4 seconds
       setTimeout(() => {

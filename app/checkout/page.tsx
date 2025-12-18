@@ -5,11 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { useState } from 'react'
-import { decrementStockQuantities } from '@/lib/adminData'
+import { useState, useEffect } from 'react'
+import { decrementStockQuantities, checkInventoryAvailability } from '@/lib/adminData'
 
 export default function CheckoutPage() {
-  const { cart, getTotalPrice, clearCart } = useCart()
+  const { cart, getTotalPrice, clearCart, removeFromCart } = useCart()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -22,6 +22,9 @@ export default function CheckoutPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderPlaced, setOrderPlaced] = useState(false)
+  const [inventoryError, setInventoryError] = useState<{
+    unavailableItems: Array<{ id: number; name: string; requestedQuantity: number; availableQuantity: number; reason: 'out_of_stock' | 'insufficient_quantity' }>
+  } | null>(null)
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-GB', {
@@ -37,19 +40,78 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  // Check inventory when cart changes
+  useEffect(() => {
+    const checkInventory = async () => {
+      if (cart.length > 0) {
+        const cartItemsForCheck = cart.map(item => ({
+          id: item.id,
+          quantity: item.quantity,
+          name: item.name
+        }))
+        try {
+          const unavailableItems = await checkInventoryAvailability(cartItemsForCheck)
+          
+          if (unavailableItems.length > 0) {
+            setInventoryError({ unavailableItems })
+            // Automatically remove unavailable items from cart
+            unavailableItems.forEach(item => {
+              removeFromCart(item.id)
+            })
+          } else {
+            setInventoryError(null)
+          }
+        } catch (error) {
+          console.error('Error checking inventory:', error)
+        }
+      } else {
+        setInventoryError(null)
+      }
+    }
+    checkInventory()
+  }, [cart, removeFromCart])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate order processing
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    // Decrement stock quantities for items sold
-    const cartItemsForStockUpdate = cart.map(item => ({
+    // Check inventory before processing
+    const cartItemsForCheck = cart.map(item => ({
       id: item.id,
-      quantity: item.quantity // This is the cart quantity (how many were sold)
+      quantity: item.quantity,
+      name: item.name
     }))
-    decrementStockQuantities(cartItemsForStockUpdate)
+    
+    try {
+      const unavailableItems = await checkInventoryAvailability(cartItemsForCheck)
+
+      if (unavailableItems.length > 0) {
+        // If there are unavailable items, remove them and show error
+        setInventoryError({ unavailableItems })
+        unavailableItems.forEach(item => {
+          removeFromCart(item.id)
+        })
+        setIsSubmitting(false)
+        return
+      }
+
+      // Clear any previous errors
+      setInventoryError(null)
+
+      // Simulate order processing
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // Decrement stock quantities for items sold
+      const cartItemsForStockUpdate = cart.map(item => ({
+        id: item.id,
+        quantity: item.quantity // This is the cart quantity (how many were sold)
+      }))
+      await decrementStockQuantities(cartItemsForStockUpdate)
+    } catch (error) {
+      console.error('Error processing order:', error)
+      setIsSubmitting(false)
+      return
+    }
 
     // Clear cart and show success
     clearCart()
@@ -122,6 +184,42 @@ export default function CheckoutPage() {
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-8 animate-slide-in">Checkout</h1>
+
+        {/* Inventory Error Alert */}
+        {inventoryError && inventoryError.unavailableItems.length > 0 && (
+          <div className="mb-6 bg-red-50 border-l-4 border-red-500 rounded-lg p-6 animate-slide-in">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-3 flex-1">
+                <h3 className="text-lg font-semibold text-red-800 mb-2">
+                  Some items are no longer available
+                </h3>
+                <p className="text-red-700 mb-4">
+                  The following items have been removed from your cart because they are out of stock or have insufficient inventory:
+                </p>
+                <ul className="list-disc list-inside space-y-2 mb-4">
+                  {inventoryError.unavailableItems.map((item) => (
+                    <li key={item.id} className="text-red-700">
+                      <span className="font-semibold">{item.name}</span>
+                      {item.reason === 'out_of_stock' ? (
+                        <span> - Out of stock</span>
+                      ) : (
+                        <span> - Only {item.availableQuantity} available (you requested {item.requestedQuantity})</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-sm text-red-600">
+                  Please review your cart and proceed with checkout when ready.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">

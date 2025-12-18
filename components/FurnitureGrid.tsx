@@ -10,9 +10,23 @@ export default function FurnitureGrid() {
   const [selectedItem, setSelectedItem] = useState<FurnitureItem | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [furnitureItems, setFurnitureItems] = useState<FurnitureItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    setFurnitureItems(getFurnitureItems())
+    const loadFurniture = async () => {
+      try {
+        const items = await getFurnitureItems()
+        setFurnitureItems(items)
+        setError(null)
+      } catch (error: any) {
+        console.error('Error loading furniture:', error)
+        setError(error.message || 'Failed to load furniture items. Please check your Supabase configuration.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadFurniture()
   }, [])
 
   // Group furniture by category
@@ -35,6 +49,43 @@ export default function FurnitureGrid() {
     setTimeout(() => {
       setSelectedItem(null)
     }, 300)
+  }
+
+  if (error) {
+    return (
+      <section id="furniture" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-lg font-semibold text-red-800">Error Loading Furniture</h3>
+                <p className="text-red-700 mt-2">{error}</p>
+                <p className="text-sm text-red-600 mt-2">
+                  Please check your Supabase configuration. See <code className="bg-red-100 px-1 rounded">SUPABASE_SETUP.md</code> for instructions.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <section id="furniture" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-gray-600">Loading furniture collection...</p>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (

@@ -46,11 +46,6 @@ export default function FurnitureCard({ item, onClick }: FurnitureCardProps) {
           className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
         />
-        {item.inStock && (
-          <span className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-300 group-hover:scale-110 shadow-md">
-            In Stock
-          </span>
-        )}
       </div>
       <div className="p-6 flex flex-col flex-grow">
         <div className="mb-2">
@@ -61,19 +56,32 @@ export default function FurnitureCard({ item, onClick }: FurnitureCardProps) {
         <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
           {item.name}
         </h3>
+        <div className="mb-3">
+          {item.inStock ? (
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-sm text-green-700 font-medium">
+                {item.quantity && item.quantity > 0 
+                  ? `${item.quantity} available in stock`
+                  : 'In stock'}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span className="text-sm text-gray-500 font-medium">
+                Out of stock
+              </span>
+            </div>
+          )}
+        </div>
         <p className="text-gray-600 text-sm mb-4 line-clamp-3 transition-colors duration-300 flex-grow">
           <span dangerouslySetInnerHTML={{ __html: item.description }} />
         </p>
-        {(item.quantity ?? 0) > 0 && (
-          <div className="flex items-center gap-2 mb-4">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            <span className="text-sm text-gray-600 font-medium">
-              {item.quantity} available in stock
-            </span>
-          </div>
-        )}
         <div className="flex items-center justify-between mt-auto">
           <div>
             <span className="text-2xl font-bold text-gray-900 transition-all duration-300">
