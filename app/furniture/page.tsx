@@ -7,6 +7,7 @@ import { FurnitureItem } from '@/data/furniture'
 import { getFurnitureItems, getCategoryToParentMap, getCategories } from '@/lib/adminData'
 import CategoryCarousel from '@/components/CategoryCarousel'
 import FurnitureModal from '@/components/FurnitureModal'
+import FurnitureLoader from '@/components/FurnitureLoader'
 
 export default function FurniturePage() {
   const [selectedItem, setSelectedItem] = useState<FurnitureItem | null>(null)
@@ -103,9 +104,7 @@ export default function FurniturePage() {
         <Header />
         <section className="py-20 bg-white min-h-screen">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <p className="text-gray-600">Loading furniture collection...</p>
-            </div>
+            <FurnitureLoader />
           </div>
         </section>
         <Footer />
