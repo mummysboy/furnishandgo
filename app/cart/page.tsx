@@ -80,7 +80,9 @@ export default function CartPage() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
                     <p className="text-sm text-gray-600 mb-2">{item.category}</p>
-                    <p className="text-lg font-semibold text-gray-900">{formatPrice(item.price)}</p>
+                    <p className="text-lg font-semibold text-gray-900 flex items-center gap-1">
+                      {formatPrice(item.price)} <span className="text-sm text-gray-600 font-normal">+VAT</span>
+                    </p>
                   </div>
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center space-x-3">
@@ -116,8 +118,8 @@ export default function CartPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-gray-900 transition-all duration-300">
-                        {formatPrice(item.price * item.quantity)}
+                      <p className="text-lg font-bold text-gray-900 transition-all duration-300 flex items-center justify-end gap-1">
+                        {formatPrice(item.price * item.quantity)} <span className="text-sm text-gray-600 font-normal">+VAT</span>
                       </p>
                       <button
                         onClick={() => removeFromCart(item.id)}
@@ -138,7 +140,9 @@ export default function CartPage() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-600 transition-all duration-300">
                   <span>Subtotal ({cart.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
-                  <span className="font-semibold transition-all duration-300">{formatPrice(totalPrice)}</span>
+                  <span className="font-semibold transition-all duration-300 flex items-center gap-1">
+                    {formatPrice(totalPrice)} <span className="text-xs text-gray-500 font-normal">+VAT</span>
+                  </span>
                 </div>
                 <div className="flex justify-between text-gray-600 transition-all duration-300">
                   <span>Delivery</span>
@@ -147,7 +151,9 @@ export default function CartPage() {
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between text-xl font-bold text-gray-900 transition-all duration-300">
                     <span>Total</span>
-                    <span>{formatPrice(totalPrice)}</span>
+                    <span className="flex items-center gap-1">
+                      {formatPrice(totalPrice)} <span className="text-sm text-gray-600 font-normal">+VAT</span>
+                    </span>
                   </div>
                 </div>
               </div>

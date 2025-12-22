@@ -194,7 +194,7 @@ function CheckoutForm({
         disabled={isProcessing || !stripe || !clientSecret}
         className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 active:bg-blue-800 transition-all duration-300 ease-out shadow-md hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:scale-100 mt-6"
       >
-        {isProcessing ? 'Processing Payment...' : `Pay ${new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(totalWithTax)}`}
+        {isProcessing ? 'Processing Payment...' : `Pay ${new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(totalWithTax)} +VAT`}
       </button>
     </form>
   )
@@ -573,8 +573,8 @@ export default function CheckoutPage() {
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
                       <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {formatPrice(item.price * item.quantity)}
+                      <p className="text-sm font-semibold text-gray-900 flex items-center gap-1">
+                        {formatPrice(item.price * item.quantity)} <span className="text-xs text-gray-500 font-normal">+VAT</span>
                       </p>
                     </div>
                   </div>
@@ -583,7 +583,9 @@ export default function CheckoutPage() {
               <div className="border-t border-gray-200 pt-4 space-y-2 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span className="flex items-center gap-1">
+                    {formatPrice(subtotal)} <span className="text-xs text-gray-500 font-normal">+VAT</span>
+                  </span>
                 </div>
                 {tax > 0 && (
                   <div className="flex justify-between text-gray-600">
@@ -598,7 +600,9 @@ export default function CheckoutPage() {
                 <div className="border-t border-gray-200 pt-2">
                   <div className="flex justify-between text-xl font-bold text-gray-900">
                     <span>Total</span>
-                    <span>{formatPrice(totalPrice)}</span>
+                    <span className="flex items-center gap-1">
+                      {formatPrice(totalPrice)} <span className="text-sm text-gray-600 font-normal">+VAT</span>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -608,7 +612,7 @@ export default function CheckoutPage() {
                 disabled={isSubmitting}
                 className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 active:bg-blue-800 transition-all duration-300 ease-out shadow-md hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:scale-100"
               >
-                {isSubmitting ? 'Processing...' : `Pay ${formatPrice(totalPrice)}`}
+                {isSubmitting ? 'Processing...' : `Pay ${formatPrice(totalPrice)} +VAT`}
               </button>
               <Link
                 href="/cart"

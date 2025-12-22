@@ -100,20 +100,31 @@ export default function CategoryPage() {
   // If selected category is a subcategory, show only items from that subcategory
   const categoryFilteredItems = categoryData 
     ? furnitureItems.filter(item => {
-        // Direct match - item's category matches selected category
-        if (item.category === categoryData.name) return true
-        
         // Check if selected category is a parent category
         if (selectedCategory) {
-          // Selected is a parent category - include items from all its subcategories
+          // Selected is a parent category - include items where:
+          // 1. category matches the parent category
+          // 2. OR subcategory belongs to this parent
+          if (item.category === categoryData.name) return true
+          
           const subcategoryNames = selectedCategory.subcategories.map(sub => sub.name)
+          if (item.subcategory && subcategoryNames.includes(item.subcategory)) return true
+          
+          // Backward compatibility: if item.category is a subcategory name, check if it belongs to this parent
           if (subcategoryNames.includes(item.category)) return true
+        } else {
+          // Selected is a subcategory - show only items with this subcategory
+          if (item.subcategory === categoryData.name) return true
+          
+          // Backward compatibility: if item.category is the subcategory name
+          if (item.category === categoryData.name) {
+            // Check if it's actually a subcategory (not a parent)
+            const isSubcategory = categoriesWithSubs.some(cat => 
+              cat.subcategories.some(sub => sub.name === categoryData.name)
+            )
+            if (isSubcategory) return true
+          }
         }
-        
-        // Also check if item's category's parent matches the selected category
-        // This handles cases where items might be stored with subcategory names
-        const itemParentCategory = categoryToParentMap.get(item.category)
-        if (itemParentCategory === categoryData.name) return true
         
         return false
       })
@@ -123,7 +134,9 @@ export default function CategoryPage() {
   const filteredItems = categoryFilteredItems.filter(item => {
     // Subcategory filter
     if (selectedSubcategories.size > 0) {
-      if (!selectedSubcategories.has(item.category)) return false
+      // Check both subcategory field and category field (for backward compatibility)
+      const itemSubcategory = item.subcategory || (categoryToParentMap.get(item.category) !== item.category ? item.category : null)
+      if (!itemSubcategory || !selectedSubcategories.has(itemSubcategory)) return false
     }
     
     // Price range filter

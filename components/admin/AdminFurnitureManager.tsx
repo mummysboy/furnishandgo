@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { FurnitureItem } from '@/data/furniture'
-import { getFurnitureItems, saveFurnitureItems, getCategories, getCategoriesWithSubcategories, addCategory } from '@/lib/adminData'
+import { getFurnitureItems, saveFurnitureItems, updateFurnitureItem, getCategories, getCategoriesWithSubcategories, addCategory } from '@/lib/adminData'
 import { CategoryWithSubcategories } from '@/lib/adminData'
 import FurnitureForm from './FurnitureForm'
 
@@ -61,26 +61,38 @@ export default function AdminFurnitureManager() {
   }
 
   const handleSave = async (item: FurnitureItem) => {
-    // Add category if it doesn't exist
-    if (!categories.includes(item.category)) {
-      await addCategory(item.category)
-      const updatedCats = await getCategories()
-      setCategories(updatedCats)
+    try {
+      console.log('Saving item:', { id: item.id, category: item.category, subcategory: item.subcategory })
+      
+      // Add category if it doesn't exist
+      if (!categories.includes(item.category)) {
+        await addCategory(item.category)
+        const updatedCats = await getCategories()
+        setCategories(updatedCats)
+      }
+      
+      let updated: FurnitureItem[]
+      if (editingItem) {
+        // Update existing item - use updateFurnitureItem for single item updates
+        console.log('Updating existing item:', item.id)
+        await updateFurnitureItem(item)
+        // Reload all items to ensure we have the latest data
+        const refreshedItems = await getFurnitureItems()
+        console.log('Refreshed items, checking updated item:', refreshedItems.find(i => i.id === item.id))
+        setFurniture(refreshedItems)
+      } else {
+        // Add new item
+        const newId = Math.max(...furniture.map(f => f.id), 0) + 1
+        updated = [...furniture, { ...item, id: newId }]
+        setFurniture(updated)
+        await saveFurnitureItems(updated)
+      }
+      setIsFormOpen(false)
+      setEditingItem(null)
+    } catch (error) {
+      console.error('Error saving item:', error)
+      alert(`Failed to save item: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
-    
-    let updated: FurnitureItem[]
-    if (editingItem) {
-      // Update existing item
-      updated = furniture.map(f => f.id === item.id ? item : f)
-    } else {
-      // Add new item
-      const newId = Math.max(...furniture.map(f => f.id), 0) + 1
-      updated = [...furniture, { ...item, id: newId }]
-    }
-    setFurniture(updated)
-    await saveFurnitureItems(updated)
-    setIsFormOpen(false)
-    setEditingItem(null)
   }
 
   const handleCancel = () => {
@@ -187,7 +199,7 @@ export default function AdminFurnitureManager() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      £{item.price.toLocaleString()}
+                      £{item.price.toLocaleString()} <span className="text-xs text-gray-500">+VAT</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${

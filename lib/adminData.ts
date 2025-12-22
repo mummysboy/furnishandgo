@@ -30,6 +30,7 @@ function dbRowToFurnitureItem(row: any): FurnitureItem {
     description: row.description,
     price: parseFloat(row.price),
     category: row.category,
+    subcategory: row.subcategory || undefined,
     image: row.image,
     images: row.images || undefined,
     inStock: row.in_stock,
@@ -44,6 +45,7 @@ function furnitureItemToDbRow(item: FurnitureItem): any {
     description: item.description,
     price: item.price,
     category: item.category,
+    subcategory: item.subcategory || null,
     image: item.image,
     images: item.images || null,
     in_stock: item.inStock,
@@ -72,36 +74,91 @@ export async function getFurnitureItems(): Promise<FurnitureItem[]> {
   return data.map(dbRowToFurnitureItem)
 }
 
+// Update a single furniture item in Supabase
+export async function updateFurnitureItem(item: FurnitureItem): Promise<void> {
+  ensureSupabaseConfigured()
+
+  try {
+    const dbRow = furnitureItemToDbRow(item)
+    
+    console.log('Updating furniture item:', { 
+      id: item.id, 
+      category: item.category, 
+      subcategory: item.subcategory,
+      dbRow: { ...dbRow, images: dbRow.images ? `${dbRow.images.length} images` : 'no images' }
+    })
+    
+    // First, verify the item exists
+    const { data: existingItem, error: fetchError } = await supabase
+      .from('furniture_items')
+      .select('id, category, subcategory')
+      .eq('id', item.id)
+      .single()
+
+    if (fetchError || !existingItem) {
+      throw new Error(`Item with id ${item.id} not found`)
+    }
+
+    console.log('Existing item before update:', existingItem)
+    
+    const { error, data } = await supabase
+      .from('furniture_items')
+      .update(dbRow)
+      .eq('id', item.id)
+      .select()
+
+    if (error) {
+      console.error('Error updating furniture item:', error)
+      // Check if it's a column error (subcategory column might not exist)
+      if (error.message.includes('subcategory') || error.message.includes('column')) {
+        throw new Error(`Database column error: ${error.message}. Please run the migration: supabase/add-subcategory-column.sql`)
+      }
+      throw new Error(`Failed to update furniture item: ${error.message}`)
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error('Update succeeded but no data returned')
+    }
+
+    console.log('Successfully updated furniture item:', data[0])
+
+    // Verify the update worked
+    const { data: verifiedItem } = await supabase
+      .from('furniture_items')
+      .select('id, category, subcategory')
+      .eq('id', item.id)
+      .single()
+
+    console.log('Verified item after update:', verifiedItem)
+
+    // Update categories if needed
+    const items = await getFurnitureItems()
+    await updateCategoriesFromItems(items)
+  } catch (error) {
+    console.error('Error updating furniture item:', error)
+    throw error
+  }
+}
+
 // Save furniture items to Supabase
 export async function saveFurnitureItems(items: FurnitureItem[]): Promise<void> {
   ensureSupabaseConfigured()
 
   try {
-    // Delete all existing items and insert new ones
-    // Note: In production, you might want to do upserts instead
-    const { error: deleteError } = await supabase
-      .from('furniture_items')
-      .delete()
-      .neq('id', 0) // Delete all (this works because id > 0)
-
-    if (deleteError) {
-      console.error('Error deleting existing items:', deleteError)
-      throw new Error(`Failed to delete existing items: ${deleteError.message}`)
-    }
-
-    // Insert all items
+    // Use upsert (insert or update) for each item
+    // This is more efficient and handles updates correctly
     const dbRows = items.map(item => ({
       ...furnitureItemToDbRow(item),
       id: item.id, // Preserve ID if it exists
     }))
 
-    const { error: insertError } = await supabase
+    const { error: upsertError } = await supabase
       .from('furniture_items')
-      .insert(dbRows)
+      .upsert(dbRows, { onConflict: 'id' })
 
-    if (insertError) {
-      console.error('Error inserting furniture items:', insertError)
-      throw new Error(`Failed to save furniture items: ${insertError.message}`)
+    if (upsertError) {
+      console.error('Error upserting furniture items:', upsertError)
+      throw new Error(`Failed to save furniture items: ${upsertError.message}`)
     }
 
     // Update categories
@@ -510,7 +567,11 @@ export async function removeSubcategory(subcategoryId: number, deleteItems: bool
   }
 
   const items = await getFurnitureItems()
-  const itemsInSubcategory = items.filter(item => item.category === subcategory.name)
+  // Find items with this subcategory (check both subcategory field and category field for backward compatibility)
+  const itemsInSubcategory = items.filter(item => 
+    item.subcategory === subcategory.name || 
+    (item.category === subcategory.name && !item.subcategory) // backward compatibility
+  )
   const itemCount = itemsInSubcategory.length
 
   if (itemCount > 0 && !deleteItems) {
@@ -518,7 +579,11 @@ export async function removeSubcategory(subcategoryId: number, deleteItems: bool
   }
 
   if (itemCount > 0 && deleteItems) {
-    const updatedItems = items.filter(item => item.category !== subcategory.name)
+    // Remove items that have this subcategory
+    const updatedItems = items.filter(item => 
+      item.subcategory !== subcategory.name && 
+      !(item.category === subcategory.name && !item.subcategory) // backward compatibility
+    )
     await saveFurnitureItems(updatedItems)
   }
 

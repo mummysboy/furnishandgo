@@ -122,12 +122,39 @@ export default function AdminCategoryManager() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
 
-  // Get categories with item counts
+  // Get categories with item counts (parent categories)
   const categoriesWithCounts = furniture.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = 0
     }
     acc[item.category]++
+    return acc
+  }, {} as Record<string, number>)
+
+  // Get subcategories with item counts
+  const subcategoriesWithCounts = furniture.reduce((acc, item) => {
+    // Count items by subcategory (if they have one)
+    if (item.subcategory) {
+      if (!acc[item.subcategory]) {
+        acc[item.subcategory] = 0
+      }
+      acc[item.subcategory]++
+    }
+    // Backward compatibility: if category is actually a subcategory name
+    // (this handles old data where subcategory was stored in category field)
+    const allCategories = categoriesWithSubs.flatMap(cat => [
+      ...cat.subcategories.map(sub => sub.name),
+      cat.name
+    ])
+    const isSubcategoryName = categoriesWithSubs.some(cat => 
+      cat.subcategories.some(sub => sub.name === item.category)
+    )
+    if (isSubcategoryName && !item.subcategory) {
+      if (!acc[item.category]) {
+        acc[item.category] = 0
+      }
+      acc[item.category]++
+    }
     return acc
   }, {} as Record<string, number>)
 
@@ -212,7 +239,9 @@ export default function AdminCategoryManager() {
   }
 
   const handleDeleteClick = (category: string, categoryId?: number, isSubcategory?: boolean) => {
-    const itemCount = categoriesWithCounts[category] || 0
+    const itemCount = isSubcategory 
+      ? (subcategoriesWithCounts[category] || 0)
+      : (categoriesWithCounts[category] || 0)
     setDeleteModal({ isOpen: true, category, categoryId, itemCount, isSubcategory })
   }
 
@@ -502,7 +531,7 @@ export default function AdminCategoryManager() {
                       ) : (
                         <div className="space-y-2">
                           {category.subcategories.map((subcategory) => {
-                            const subItemCount = categoriesWithCounts[subcategory.name] || 0
+                            const subItemCount = subcategoriesWithCounts[subcategory.name] || 0
                             return (
                               <div key={subcategory.id} className="flex items-center justify-between py-2 px-3 bg-white rounded border border-gray-200">
                                 <div>

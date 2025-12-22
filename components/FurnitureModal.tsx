@@ -173,7 +173,10 @@ export default function FurnitureModal({ item, isOpen, onClose }: FurnitureModal
           
           <div className="mb-6">
             <div className="flex items-center gap-4 flex-wrap">
-              <span className="text-3xl font-bold text-gray-900">{formatPrice(item.price)}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-3xl font-bold text-gray-900">{formatPrice(item.price)}</span>
+                <span className="text-sm text-gray-600">+VAT</span>
+              </div>
               {item.inStock && (
                 <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                   In Stock

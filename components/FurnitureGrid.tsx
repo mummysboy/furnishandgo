@@ -50,11 +50,21 @@ export default function FurnitureGrid() {
   // Group furniture by parent category (aggregate all subcategory products under parent)
   // IMPORTANT: Only show parent categories, never subcategories directly
   const furnitureByParentCategory = furnitureItems.reduce((acc, item) => {
-    // Get the parent category name for this item's category
-    // Only use mapped categories - ignore items with categories that don't map to a parent
-    const parentCategoryName = categoryToParentMap.get(item.category)
+    // Use item.category as the parent category (it should now always be the parent)
+    // For backward compatibility, check if category is actually a subcategory
+    let parentCategoryName = item.category
     
-    // Only include items that map to a valid parent category
+    // If item has a subcategory, category should be the parent
+    // If not, check if category is actually a subcategory (backward compatibility)
+    if (!item.subcategory) {
+      const mappedParent = categoryToParentMap.get(item.category)
+      if (mappedParent && mappedParent !== item.category) {
+        // It's a subcategory stored in category field (old data)
+        parentCategoryName = mappedParent
+      }
+    }
+    
+    // Only include items that have a valid parent category
     if (parentCategoryName) {
       if (!acc[parentCategoryName]) {
         acc[parentCategoryName] = []

@@ -83,10 +83,11 @@ export default function FurnitureCard({ item, onClick }: FurnitureCardProps) {
           <span dangerouslySetInnerHTML={{ __html: item.description }} />
         </p>
         <div className="flex items-center justify-between mt-auto">
-          <div>
+          <div className="flex items-center gap-1">
             <span className="text-2xl font-bold text-gray-900 transition-all duration-300">
               {formatPrice(item.price)}
             </span>
+            <span className="text-sm text-gray-600">+VAT</span>
           </div>
           <button
             onClick={(e) => {
